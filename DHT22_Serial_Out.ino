@@ -1,19 +1,34 @@
 #include "DHT.h"
+#include <SoftwareSerial.h>
+
+SoftwareSerial softBLE(5, 4); // RX, TX
 
 #define DHTPIN 2     // what pin we're connected to
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 
 DHT dht(DHTPIN, DHTTYPE);
 
+#define TRIGGER 9
+
 float h = 0, t = 0;
 
 unsigned int count = 0;
+char buf[60];
 
+char floatBuf1[6];
+char floatBuf2[6];
+  
 void setup() {
+  pinMode(TRIGGER, INPUT);
+  
   pinMode(3, OUTPUT);
   digitalWrite(3, HIGH);
+  
+  delay(70);
 
   Serial.begin(9600); 
+  // set the data rate for the SoftwareSerial port
+  softBLE.begin(9600);
 
   dht.begin();
 
@@ -34,18 +49,21 @@ void loop() {
       h += dht.readHumidity();
       // Read temperature as Celsius
       t += dht.readTemperature();      
-      count++;    
+      count++;
       return;
     }
-
-
   if (millis() % 2000 == 0) {
-    Serial.print("SN:001,");
-    Serial.print("HUMIDI:"); 
-    Serial.print(h);
-    Serial.print(",");   
-    Serial.print("TEMPER:"); 
-    Serial.println(t);
+    dtostrf(h, 2, 2, floatBuf1);
+    dtostrf(t, 2, 2, floatBuf2);
+    if (digitalRead(TRIGGER) == HIGH) {
+      snprintf(buf, sizeof(buf), "SN:%s,HUMIDI:%s,TEMPER:%s", "001", floatBuf1, floatBuf2);
+    }
+    else {
+      strcpy(buf, floatBuf2);
+    }
+    
+    Serial.println(buf);
+    softBLE.println(buf);
     
     h = 0;
     t = 0;
