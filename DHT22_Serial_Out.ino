@@ -10,7 +10,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 #define TRIGGER 9
 
-float h = 0, t = 0;
+double h = 0, t = 0;
 
 unsigned int count = 0;
 char buf[60];
@@ -27,7 +27,6 @@ void setup() {
   delay(70);
 
   Serial.begin(9600); 
-  // set the data rate for the SoftwareSerial port
   softBLE.begin(9600);
 
   dht.begin();
@@ -52,7 +51,7 @@ void loop() {
       count++;
       return;
     }
-  if (millis() % 2000 == 0) {
+  if (millis() % 1000 == 0) {
     dtostrf(h, 2, 2, floatBuf1);
     dtostrf(t, 2, 2, floatBuf2);
     if (digitalRead(TRIGGER) == HIGH) {
@@ -65,6 +64,7 @@ void loop() {
     Serial.println(buf);
     softBLE.println(buf);
     
+    // reset
     h = 0;
     t = 0;
     count = 0;
