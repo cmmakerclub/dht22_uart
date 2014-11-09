@@ -6,7 +6,7 @@ SoftwareSerial softBLE(5, 4); // RX, TX
 #define DHTPIN 2     // what pin we're connected to
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(DHTPIN, DHTTYPE, 3);
 
 #define TRIGGER 9
 
@@ -19,7 +19,7 @@ char floatBuf1[6];
 char floatBuf2[6];
   
 void setup() {
-  pinMode(TRIGGER, INPUT);
+  pinMode(TRIGGER, INPUT_PULLUP);
   
   pinMode(3, OUTPUT);
   digitalWrite(3, HIGH);
@@ -54,7 +54,7 @@ void loop() {
   if (millis() % 1000 == 0) {
     dtostrf(h, 2, 2, floatBuf1);
     dtostrf(t, 2, 2, floatBuf2);
-    if (digitalRead(TRIGGER) == HIGH) {
+    if (digitalRead(TRIGGER) == LOW) {
       snprintf(buf, sizeof(buf), "SN:%s,HUMIDI:%s,TEMPER:%s", "001", floatBuf1, floatBuf2);
     }
     else {
