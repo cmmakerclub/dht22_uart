@@ -51,6 +51,7 @@ void loop() {
       count++;
       return;
     }
+    
   if (millis() % 1000 == 0) {
     dtostrf(h, 2, 2, floatBuf1);
     dtostrf(t, 2, 2, floatBuf2);
