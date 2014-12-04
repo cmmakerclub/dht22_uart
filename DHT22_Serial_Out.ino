@@ -52,31 +52,31 @@ void loop() {
       return;
     }
     
-  if (millis() % 1000 == 0) {
-    dtostrf(h, 2, 2, floatBuf1);
-    dtostrf(t, 2, 2, floatBuf2);
-    if (digitalRead(TRIGGER) == LOW) {
-      snprintf(buf, sizeof(buf), "SN:%s,HUMIDI:%s,TEMPER:%s", "001", floatBuf1, floatBuf2);
+    if (millis() % 1000 == 0) {
+      dtostrf(h, 2, 2, floatBuf1);
+      dtostrf(t, 2, 2, floatBuf2);
+      if (digitalRead(TRIGGER) == LOW) {
+        snprintf(buf, sizeof(buf), "SN:%s,HUMIDI:%s,TEMPER:%s", "001", floatBuf1, floatBuf2);
+      }
+      else {
+        strcpy(buf, floatBuf2);
+      }
+      
+      Serial.println(buf);
+      softBLE.println(buf);
+      
+      // reset
+      h = 0;
+      t = 0;
+      count = 0;
     }
     else {
-      strcpy(buf, floatBuf2);
+      // Reading temperature or humidity takes about 250 milliseconds!
+      // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+      h = dht.readHumidity();
+      // Read temperature as Celsius
+      t = dht.readTemperature();
+      count++;    
     }
-    
-    Serial.println(buf);
-    softBLE.println(buf);
-    
-    // reset
-    h = 0;
-    t = 0;
-    count = 0;
-  }
-  else {
-    // Reading temperature or humidity takes about 250 milliseconds!
-    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-    h = dht.readHumidity();
-    // Read temperature as Celsius
-    t = dht.readTemperature();
-    count++;    
-  }
 }
 
